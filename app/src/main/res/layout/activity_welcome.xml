@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center"
+    android:background="#F5F5F5">
+
+    <!-- Внимание заголовок -->
+    <TextView
+        android:id="@+id/tvAttention"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ВНИМАНИЕ!"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="#D32F2F"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="40dp" />
+
+    <!-- Основной текст предупреждения -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/tvWarningText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Данное приложение предназначено для предварительного анализа речевых признаков, которые могут указывать на болезнь Паркинсона. \n\nРезультаты анализа не являются медицинским диагнозом и не заменяют консультацию квалифицированного врача-специалиста. \n\nПриложение использует алгоритмы машинного обучения для оценки речевых характеристик, но точность может варьироваться в зависимости от качества записи и индивидуальных особенностей речи. \n\nЕсли у вас есть подозрения на наличие болезни Паркинсона или других неврологических заболеваний, обязательно обратитесь к врачу для проведения полноценного медицинского обследования. \n\nИспользуя это приложение, вы подтверждаете, что понимаете его ограничения и назначение."
+            android:textSize="16sp"
+            android:lineSpacingExtra="4dp"
+            android:textColor="#333333"
+            android:padding="8dp" />
+    </ScrollView>
+
+    <!-- Кнопка ХОРОШО -->
+    <Button
+        android:id="@+id/btnOkay"
+        android:layout_width="200dp"
+        android:layout_height="56dp"
+        android:text="ХОРОШО"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:backgroundTint="#2196F3"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="40dp"
+        android:layout_gravity="center"
+        android:elevation="4dp"
+        android:stateListAnimator="@null" />
+
+</LinearLayout>

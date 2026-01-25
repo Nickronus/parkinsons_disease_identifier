@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">parkinsons_disease_identifier</string>
+    <string name="btn_speech_analysis">Анализ речи</string>
+    <string name="btn_vowel_phonation">Анализ фонации гласных</string>
+    <string name="btn_about">О программе</string>
+    
+    <!-- Speech Analysis Activity -->
+    <string name="instruction_speech_analysis">Пожалуйста, запишите небольшой фрагмент речи. Говорите четко и естественно в течение 10-30 секунд.</string>
+    
+    <!-- Vowel Phonation Activity -->
+    <string name="instruction_vowel_phonation">Пожалуйста, как можно дольше фонируйте один из гласных звуков (а, о, у, э, и). Дышите глубоко и произносите гласные максимально долго и ровно.</string>
+    <string name="btn_start_recording">Начать запись</string>
+    <string name="btn_stop_recording">Остановить запись</string>
+    <string name="btn_cancel">Отмена</string>
+    <string name="btn_analyze">Анализ</string>
+    <string name="status_ready">Готов к записи</string>
+    <string name="status_recording">Идет запись...</string>
+    <string name="status_stopped">Запись остановлена</string>
+    <string name="status_recording_completed">Запись завершена</string>
+    
+    <!-- Analysis Results Activity -->
+    <string name="warning_not_diagnosis">Результаты анализа не являются диагнозом, необходима консультация специалиста</string>
+    <string name="probability_label">Вероятность наличия болезни Паркинсона</string>
+    <string name="btn_repeat">Повторить</string>
+    <string name="btn_finish">Завершить</string>
+    
+    <!-- About Activity -->
+    <string name="about_text">Это приложение предназначено для предварительного анализа речевых признаков, которые могут указывать на болезнь Паркинсона.\n\nПриложение использует современные алгоритмы машинного обучения для оценки речевых характеристик. Результаты анализа носят информационный характер и не заменяют консультацию квалифицированного врача.\n\nДля получения наиболее точных результатов рекомендуется записывать речь в тихом помещении, используя качественный микрофон.\n\nВерсия: 1.0</string>
+    <string name="btn_understood">Понятно</string>
+</resources>
