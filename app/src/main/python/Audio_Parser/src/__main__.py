@@ -1,0 +1,13 @@
+from ieee_database_parser import IEEEDatabaseParser
+from characteristic_extractor.praat_characteristic_extractor_creator import PraatCharacteristicExtractorCreator
+from characteristic_extractor.abstract_characteristic_extractor_creator import AbstractCharacteristicExtractorCreator
+from characteristic_saver.i_characteristic_saver import ICharacteristicSaver
+from characteristic_saver.excel_characteristic_saver import ExcelCharacteristicSaver
+from characteristic_saver.ieee_database_excel_characteristic_saver import IEEEDatabaseExcelCharacteristicSaver
+
+if __name__ == '__main__':
+    characteristic_extractor_creator: AbstractCharacteristicExtractorCreator = PraatCharacteristicExtractorCreator()
+    characteristic_saver: ICharacteristicSaver = ExcelCharacteristicSaver()
+    ieee_characteristic_saver: ICharacteristicSaver = IEEEDatabaseExcelCharacteristicSaver(characteristic_saver)
+    ieee_database_parser = IEEEDatabaseParser(characteristic_extractor_creator, ieee_characteristic_saver)
+    ieee_database_parser.parse()
