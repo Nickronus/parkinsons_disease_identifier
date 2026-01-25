@@ -16,7 +16,14 @@ class SpeechCharacteristicProcessor(AbstractCharacteristicProcessor):
         AbstractCharacteristicProcessor.__init__(self, characteristic_extractor_creator, characteristic_saver)
 
     def _create_characteristic_extractor_methods_list(self, characteristic_extractor: ICharacteristicExtractor) ->list[Callable[[], dict[Characteristic: float]]]:
-        return [characteristic_extractor.get_f0_mean,
-                characteristic_extractor.get_no_pauses,
-                characteristic_extractor.get_intensity_SD]
-                
+        return[characteristic_extractor.get_jitter_ppq5,
+                characteristic_extractor.get_jitter_local,
+                characteristic_extractor.get_shimmer_local,
+                characteristic_extractor.get_hnr,
+                characteristic_extractor.get_jitter_abs,
+                characteristic_extractor.get_jitter_rap,
+                characteristic_extractor.get_shimmer_db,
+                characteristic_extractor.get_shimmer_apq3,
+                characteristic_extractor.get_shimmer_apq5,
+                characteristic_extractor.get_shimmer_apq11,
+                characteristic_extractor.get_ppe]

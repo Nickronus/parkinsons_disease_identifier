@@ -1,6 +1,7 @@
 import parselmouth
 import statistics
 import numpy as np
+from scipy.stats import entropy
 
 from characteristic_extractor.i_characteristic_extractor import ICharacteristicExtractor
 from characteristic import Characteristic
@@ -240,3 +241,114 @@ class PraatCharacteristicExtractor(ICharacteristicExtractor):
         # Определение min и max F0
         self.__f0_min = np.min(f0_values)
         self.__f0_max = np.max(f0_values)
+
+
+    # def get_jitter_abs(self) -> dict[Characteristic: float]:
+    #     """Absolute jitter (local)."""
+    #     jitter_local = parselmouth.praat.call(self.__point_process, "Get jitter (local)", 0, 0, 0.0001, 0.02, 1.3)
+    #     mean_period = parselmouth.praat.call(self.__pitch, "Get mean period", 0, 0, 0.0001, 0.02, 1.3)
+    #     jitter_abs = jitter_local * mean_period
+    #     return {Characteristic.JITTER_ABS: jitter_abs}
+    def get_jitter_abs(self) -> dict[Characteristic, float]:
+        """Absolute jitter (local) in seconds."""
+        if not self.__point_process:
+            # Создаем PointProcess, если он еще не создан
+            self.__pitch = self.__sound.to_pitch()
+            self.__point_process = parselmouth.praat.call([self.__sound, self.__pitch], "To PointProcess (cc)")
+        
+        # Получаем абсолютный jitter (local) напрямую из PointProcess
+        jitter_abs = parselmouth.praat.call(self.__point_process, "Get jitter (local, absolute)", 0, 0, 0.0001, 0.02, 1.3)
+        return {Characteristic.JITTER_ABS: jitter_abs}
+
+    def get_jitter_rap(self) -> dict[Characteristic: float]:
+        """Relative Average Perturbation (RAP)."""
+        jitter_rap = parselmouth.praat.call(self.__point_process, "Get jitter (rap)", 0, 0, 0.0001, 0.02, 1.3)
+        return {Characteristic.JITTER_RAP: jitter_rap}
+
+    # def get_shimmer_db(self) -> dict[Characteristic: float]:
+    #     """Shimmer in dB."""
+    #     shimmer_db = parselmouth.praat.call(self.__point_process, "Get shimmer (local_dB)", 0, 0, 0.0001, 0.02, 1.3)
+    #     return {Characteristic.SHIMMER_DB: shimmer_db}
+
+    def get_shimmer_db(self) -> dict[Characteristic, float]:
+        """Shimmer in dB."""
+        if not self.__point_process:
+            self.__pitch = self.__sound.to_pitch()
+            self.__point_process = parselmouth.praat.call([self.__sound, self.__pitch], "To PointProcess (cc)")
+        
+        shimmer_db = parselmouth.praat.call([self.__sound, self.__point_process], "Get shimmer (local_dB)", 0, 0, 0.0001, 0.02, 1.3, 1.6)
+        return {Characteristic.SHIMMER_DB: shimmer_db}
+
+    # def get_shimmer_apq3(self) -> dict[Characteristic: float]:
+    #     """Amplitude Perturbation Quotient (3-point)."""
+    #     shimmer_apq3 = parselmouth.praat.call(self.__point_process, "Get shimmer (apq3)", 0, 0, 0.0001, 0.02, 1.3)
+    #     return {Characteristic.SHIMMER_APQ3: shimmer_apq3}
+
+    # def get_shimmer_apq5(self) -> dict[Characteristic: float]:
+    #     """Amplitude Perturbation Quotient (5-point)."""
+    #     shimmer_apq5 = parselmouth.praat.call(self.__point_process, "Get shimmer (apq5)", 0, 0, 0.0001, 0.02, 1.3)
+    #     return {Characteristic.SHIMMER_APQ5: shimmer_apq5}
+
+    # def get_shimmer_apq11(self) -> dict[Characteristic: float]:
+    #     """Amplitude Perturbation Quotient (11-point)."""
+    #     shimmer_apq11 = parselmouth.praat.call(self.__point_process, "Get shimmer (apq11)", 0, 0, 0.0001, 0.02, 1.3)
+    #     return {Characteristic.SHIMMER_APQ11: shimmer_apq11}
+
+    def get_shimmer_apq3(self) -> dict[Characteristic, float]:
+        """Amplitude Perturbation Quotient (3-point)."""
+        if not self.__point_process:
+            self.__pitch = self.__sound.to_pitch()
+            self.__point_process = parselmouth.praat.call([self.__sound, self.__pitch], "To PointProcess (cc)")
+        
+        shimmer_apq3 = parselmouth.praat.call([self.__sound, self.__point_process], "Get shimmer (apq3)", 0, 0, 0.0001, 0.02, 1.3, 1.6)
+        return {Characteristic.SHIMMER_APQ3: shimmer_apq3}
+
+    def get_shimmer_apq5(self) -> dict[Characteristic, float]:
+        """Amplitude Perturbation Quotient (5-point)."""
+        if not self.__point_process:
+            self.__pitch = self.__sound.to_pitch()
+            self.__point_process = parselmouth.praat.call([self.__sound, self.__pitch], "To PointProcess (cc)")
+        
+        shimmer_apq5 = parselmouth.praat.call([self.__sound, self.__point_process], "Get shimmer (apq5)", 0, 0, 0.0001, 0.02, 1.3, 1.6)
+        return {Characteristic.SHIMMER_APQ5: shimmer_apq5}
+
+    def get_shimmer_apq11(self) -> dict[Characteristic, float]:
+        """Amplitude Perturbation Quotient (11-point)."""
+        if not self.__point_process:
+            self.__pitch = self.__sound.to_pitch()
+            self.__point_process = parselmouth.praat.call([self.__sound, self.__pitch], "To PointProcess (cc)")
+        
+        shimmer_apq11 = parselmouth.praat.call([self.__sound, self.__point_process], "Get shimmer (apq11)", 0, 0, 0.0001, 0.02, 1.3, 1.6)
+        return {Characteristic.SHIMMER_APQ11: shimmer_apq11}
+    
+    def get_ppe(self) -> dict[Characteristic: float]:
+        """Pitch Period Entropy"""
+        pitch = self.__sound.to_pitch()
+
+        pitch_values = pitch.selected_array['frequency'] # Get the frequencies
+        # Remove the unvoiced parts:
+        pitch_values[pitch_values==0] = np.nan  # Replace 0 with NaN
+        pitch_values = pitch_values[~np.isnan(pitch_values)]  # Remove NaN
+        ppe_value = self.__calculate_ppe(1 / pitch_values)
+        return {Characteristic.PPE: ppe_value}
+        
+    def __calculate_ppe(self, pitch_values):
+        """
+        Вычисляет энтропию периода основного тона (Pitch Period Entropy).
+
+        Args:
+            pitch_values: Массив NumPy со значениями периода основного тона (в секундах).
+
+        Returns:
+            Значение энтропии периода основного тона.
+        """
+        # 1. Преобразование в разности периодов:
+        period_differences = np.diff(pitch_values)
+
+        # 2. Дискретизация разностей периодов (гистограмма):
+        hist, _ = np.histogram(period_differences, bins=20, density=True) # bins=20 - оптимальное количество для периодов
+
+        # 3. Вычисление энтропии с использованием scipy.stats.entropy:
+        ppe_value = entropy(hist)
+
+        return ppe_value

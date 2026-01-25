@@ -101,3 +101,38 @@ class ICharacteristicExtractor(ABC):
         """Duration"""
         pass
 
+
+    @abstractmethod
+    def get_jitter_abs(self) -> dict[Characteristic: float]:
+        """Absolute jitter (local)."""
+        pass
+
+    @abstractmethod
+    def get_jitter_rap(self) -> dict[Characteristic: float]:
+        """Relative Average Perturbation (RAP)."""
+        pass
+
+    @abstractmethod
+    def get_shimmer_db(self) -> dict[Characteristic: float]:
+        """Shimmer in dB."""
+        pass
+
+    @abstractmethod
+    def get_shimmer_apq3(self) -> dict[Characteristic: float]:
+        """Amplitude Perturbation Quotient (3-point)."""
+        pass
+
+    @abstractmethod
+    def get_shimmer_apq5(self) -> dict[Characteristic: float]:
+        """Amplitude Perturbation Quotient (5-point)."""
+        pass
+
+    @abstractmethod
+    def get_shimmer_apq11(self) -> dict[Characteristic: float]:
+        """Amplitude Perturbation Quotient (11-point)."""
+        pass
+
+    @abstractmethod
+    def get_ppe(self) -> dict[Characteristic: float]:
+        """Pitch Period Entropy"""
+        pass

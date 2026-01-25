@@ -1,0 +1,108 @@
+Использованные признаки:
+['Jitter(%)', 'PPE', 'Shimmer:APQ11', 'Shimmer:APQ3', 'HNR', 'Jitter(Abs)', 'Jitter:PPQ5', 'Shimmer(dB)']
+
+model = CatBoostClassifier(
+        iterations=1731,
+        learning_rate=0.04541312179923037,
+        depth=9,
+        l2_leaf_reg=7.135909452154734,
+        border_count=246,
+        random_strength=6.281579072909145,
+        bagging_temperature=5.948264766659993,
+        loss_function='Logloss',
+        eval_metric='AUC',
+        random_seed=random_state,
+        thread_count=max(1, (os.cpu_count() or 4) - 1),
+        verbose=0
+    )
+
+Итоговые метрики:
+Accuracy: 0.9653 ± 0.0118
+ROC AUC: 0.9933 ± 0.0039
+F1 Score: 0.9413 ± 0.0303
+
+Распределение по пациентам:
+IS SICK
+1    441
+0    286
+Name: count, dtype: int64
+Fold 1:
+  Patients in train: 655
+  Patients in test: 72
+  Accuracy: 0.9703
+  F1 Score: 0.9380
+  ROC AUC: 0.9936
+  Best iteration: 397
+--------------------------------------------------
+Fold 2:
+  Patients in train: 653
+  Patients in test: 74
+  Accuracy: 0.9743
+  F1 Score: 0.9570
+  ROC AUC: 0.9969
+  Best iteration: 310
+--------------------------------------------------
+Fold 3:
+  Patients in train: 654
+  Patients in test: 73
+  Accuracy: 0.9716
+  F1 Score: 0.9536
+  ROC AUC: 0.9968
+  Best iteration: 310
+--------------------------------------------------
+Fold 4:
+  Patients in train: 654
+  Patients in test: 73
+  Accuracy: 0.9658
+  F1 Score: 0.9481
+  ROC AUC: 0.9931
+  Best iteration: 918
+--------------------------------------------------
+Fold 5:
+  Patients in train: 654
+  Patients in test: 73
+  Accuracy: 0.9734
+  F1 Score: 0.9431
+  ROC AUC: 0.9955
+  Best iteration: 452
+--------------------------------------------------
+Fold 6:
+  Patients in train: 653
+  Patients in test: 74
+  Accuracy: 0.9707
+  F1 Score: 0.9686
+  ROC AUC: 0.9945
+  Best iteration: 745
+--------------------------------------------------
+Fold 7:
+  Patients in train: 655
+  Patients in test: 72
+  Accuracy: 0.9316
+  F1 Score: 0.8533
+  ROC AUC: 0.9825
+  Best iteration: 582
+--------------------------------------------------
+Fold 8:
+  Patients in train: 655
+  Patients in test: 72
+  Accuracy: 0.9623
+  F1 Score: 0.9504
+  ROC AUC: 0.9941
+  Best iteration: 867
+--------------------------------------------------
+Fold 9:
+  Patients in train: 655
+  Patients in test: 72
+  Accuracy: 0.9685
+  F1 Score: 0.9497
+  ROC AUC: 0.9917
+  Best iteration: 958
+--------------------------------------------------
+Fold 10:
+  Patients in train: 655
+  Patients in test: 72
+  Accuracy: 0.9645
+  F1 Score: 0.9513
+  ROC AUC: 0.9942
+  Best iteration: 398
+--------------------------------------------------
