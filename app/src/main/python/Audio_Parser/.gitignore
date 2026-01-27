@@ -1,0 +1,7 @@
+venv/
+3rd_party/
+src/__pycache__/
+src/characteristic_extractor/__pycache__/
+src/characteristic_processor/__pycache__/
+src/characteristic_saver/__pycache__/
+.vscode/

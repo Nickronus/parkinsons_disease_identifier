@@ -3,10 +3,7 @@ from collections.abc import Callable
 
 from characteristic import Characteristic
 from characteristic_extractor.abstract_characteristic_extractor_creator import AbstractCharacteristicExtractorCreator
-from characteristic_saver.i_characteristic_saver import ICharacteristicSaver
 from characteristic_extractor.i_characteristic_extractor import ICharacteristicExtractor
-from file_paths_extractor import FilePathsExtractor
-from characteristic_extractor.abstract_characteristic_extractor_creator import AbstractCharacteristicExtractorCreator
 from characteristic_saver.i_characteristic_saver import ICharacteristicSaver
 
 class AbstractCharacteristicProcessor(ABC):
@@ -18,17 +15,14 @@ class AbstractCharacteristicProcessor(ABC):
         self._characteristic_extractor_creator = characteristic_extractor_creator
         self._characteristic_saver = characteristic_saver
 
-    def process(self, folder_path: str, file_patterns: list[str], output_filename: str):
-        """Извлекает пути к файлам (FilePathsExtractor), 
-        извлекает характеристики аудиофайлов (ICharacteristicExtractor),
+    def process(self, file_paths_list: list[str], output_filename: str):
+        """Извлекает характеристики аудиофайлов (ICharacteristicExtractor),
         сохраняет данные (ICharacteristicSaver).
 
         Args:
-            folder_path (str): Путь к папке с файлами.
-            file_patterns (list[str]): Паттерн файлов.
+            file_paths_list (list[str]): Список путей к обрабатываемым файлам.
             output_filename (str): Имя сохраняемого файла.
         """        
-        file_paths_list:list[str] = FilePathsExtractor.extract(folder_path, file_patterns)
         header_and_data: dict[str, list[str]] = {}
         header_and_data_node = {Characteristic.FILEPATH.name: []}
         header_and_data.update(header_and_data_node)
@@ -55,9 +49,8 @@ class AbstractCharacteristicProcessor(ABC):
 
             header_and_data[Characteristic.FILEPATH.name].append(file_path)
             for key, value in characteristics_dict.items():
-                if not key.name in header_and_data:
-                        header_and_data_node = {key.name: []}
-                        header_and_data.update(header_and_data_node)
+                if key.name not in header_and_data:
+                    header_and_data[key.name] = []
 
                 header_and_data[key.name].append(value)
 

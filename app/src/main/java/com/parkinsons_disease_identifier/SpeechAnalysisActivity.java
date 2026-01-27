@@ -20,13 +20,21 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.chaquo.python.Python;
+import com.chaquo.python.PyObject;
+
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class SpeechAnalysisActivity extends AppCompatActivity {
 
     private static final String TAG = "SpeechAnalysisActivity";
     private static final String AUDIO_FILE_NAME = "speech_recording.wav";
+    /** Тестовый WAV из папки audiofiles (Parselmouth не читает 3GP/AMR запись) */
+    private static final String ASSET_TEST_WAV = "VU2RLOABREE42M240120171952.wav";
 
     private Button btnRecord;
     private Button btnCancel;
@@ -263,29 +271,53 @@ public class SpeechAnalysisActivity extends AppCompatActivity {
     }
 
     /**
+     * Копирует тестовый WAV из assets (папка audiofiles) во внутреннее хранилище
+     * и возвращает путь к нему. Parselmouth поддерживает только WAV, а запись идёт в 3GP/AMR.
+     */
+    private String getTestWavPathFromAssets() {
+        File outFile = new File(getFilesDir(), "test_speech_from_assets.wav");
+        if (outFile.exists()) {
+            return outFile.getAbsolutePath();
+        }
+        try (InputStream in = getAssets().open(ASSET_TEST_WAV);
+             OutputStream out = new FileOutputStream(outFile)) {
+            byte[] buf = new byte[8192];
+            int n;
+            while ((n = in.read(buf)) > 0) {
+                out.write(buf, 0, n);
+            }
+            Log.d(TAG, "Скопирован тестовый WAV из assets: " + outFile.getAbsolutePath());
+            return outFile.getAbsolutePath();
+        } catch (IOException e) {
+            Log.e(TAG, "Ошибка копирования тестового WAV из assets", e);
+            return null;
+        }
+    }
+
+    /**
      * Метод для выполнения анализа речи
-     * Здесь вы добавите свой код анализа
+     * Используется WAV из папки audiofiles (assets), т.к. запись в 3GP/AMR не поддерживается Parselmouth.
      * @return вероятность наличия болезни Паркинсона в процентах (0.0 - 100.0)
      */
     private double performAnalysis() {
-        // Получаем путь к аудиофайлу
-        String audioFilePath = getAudioFilePath();
-        
+        String audioFilePath = getTestWavPathFromAssets();
         if (audioFilePath == null) {
-            Toast.makeText(this, "Аудиофайл не найден", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Тестовый аудиофайл не найден в assets", Toast.LENGTH_SHORT).show();
             return 0.0;
         }
-        
-        Log.d(TAG, "Начинаем анализ файла: " + audioFilePath);
-        
-        // TODO: Добавьте здесь ваш код анализа
-        // Пример: вызов Python функции для анализа
-        // Python py = Python.getInstance();
-        // PyObject module = py.getModule("your_analysis_module");
-        // PyObject result = module.callAttr("analyze_speech", audioFilePath);
-        // return result.toDouble();
-        
-        // Временное значение для тестирования
-        return 0.0; // Замените на реальный результат анализа
+        Log.d(TAG, "Начинаем анализ файла (из audiofiles): " + audioFilePath);
+
+        try {
+            Python py = Python.getInstance();
+            PyObject module = py.getModule("praat_test");
+            PyObject result = module.callAttr("analyze_speech_parselmouth", audioFilePath);
+            double value = result.toDouble();
+            Log.d(TAG, "Результат praat_test: " + value);
+            return value;
+        } catch (Exception e) {
+            Log.e(TAG, "Ошибка вызова praat_test", e);
+            Toast.makeText(this, "Ошибка анализа: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            return 0.0;
+        }
     }
 }

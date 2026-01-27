@@ -65,3 +65,11 @@ class Characteristic(Enum):
     DURATION = 19
     """Длительность
     """
+
+    JITTER_ABS = 20
+    JITTER_RAP = 21
+    SHIMMER_DB = 22
+    SHIMMER_APQ3 = 23
+    SHIMMER_APQ5 = 24
+    SHIMMER_APQ11 = 25
+    PPE = 26
