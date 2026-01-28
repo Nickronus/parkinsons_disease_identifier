@@ -3,7 +3,6 @@ package com.parkinsons_disease_identifier;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,8 +19,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.chaquo.python.Python;
+import com.chaquo.python.PyObject;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class VowelPhonationActivity extends AppCompatActivity {
 
@@ -34,9 +38,10 @@ public class VowelPhonationActivity extends AppCompatActivity {
     private TextView tvStatus;
     private boolean isRecording = false;
     private boolean hasRecording = false;
-    
-    private MediaRecorder mediaRecorder;
+
+    private WavRecorder wavRecorder;
     private File audioFile;
+    private Map<String, Object> lastFeatures = null; // Сохраняем последние характеристики
     
     // Launcher для запроса разрешения на запись аудио
     private ActivityResultLauncher<String> requestPermissionLauncher =
@@ -74,8 +79,9 @@ public class VowelPhonationActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Освобождаем ресурсы MediaRecorder
-        releaseMediaRecorder();
+        if (wavRecorder != null) {
+            wavRecorder.stop();
+        }
     }
 
     private void initViews() {
@@ -107,13 +113,45 @@ public class VowelPhonationActivity extends AppCompatActivity {
         btnAnalyze.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Выполняем анализ (здесь будет ваш код)
-                double probability = performAnalysis();
-                
-                // Переход к форме результатов с передачей процентов
-                Intent intent = new Intent(VowelPhonationActivity.this, AnalysisResultsActivity.class);
-                intent.putExtra("probability", probability);
-                startActivity(intent);
+                setAnalyzingState(true);
+                // Даём интерфейсу отрисоваться, затем анализ в фоне
+                v.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                final double probability = performAnalysis();
+                                final Map<String, Object> features = lastFeatures;
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Intent intent = new Intent(VowelPhonationActivity.this, AnalysisResultsActivity.class);
+                                        intent.putExtra("probability", probability);
+                                        // Передаём характеристики
+                                        if (features != null) {
+                                            for (Map.Entry<String, Object> entry : features.entrySet()) {
+                                                Object value = entry.getValue();
+                                                if (value instanceof Double) {
+                                                    intent.putExtra(entry.getKey(), (Double) value);
+                                                } else if (value instanceof Float) {
+                                                    intent.putExtra(entry.getKey(), (Float) value);
+                                                } else if (value instanceof Integer) {
+                                                    intent.putExtra(entry.getKey(), (Integer) value);
+                                                } else if (value instanceof Long) {
+                                                    intent.putExtra(entry.getKey(), (Long) value);
+                                                } else if (value instanceof String) {
+                                                    intent.putExtra(entry.getKey(), (String) value);
+                                                }
+                                            }
+                                        }
+                                        startActivity(intent);
+                                    }
+                                });
+                            }
+                        }).start();
+                    }
+                });
             }
         });
     }
@@ -136,86 +174,64 @@ public class VowelPhonationActivity extends AppCompatActivity {
 
     private void startRecording() {
         try {
-            // Создаем файл для записи во внутреннем хранилище приложения
             audioFile = new File(getFilesDir(), AUDIO_FILE_NAME);
-            
-            // Освобождаем предыдущий MediaRecorder, если он существует
-            releaseMediaRecorder();
-            
-            // Создаем новый MediaRecorder
-            mediaRecorder = new MediaRecorder();
-            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            mediaRecorder.setOutputFile(audioFile.getAbsolutePath());
-            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            
-            // Подготавливаем и запускаем запись
-            mediaRecorder.prepare();
-            mediaRecorder.start();
-            
+            if (wavRecorder == null) {
+                wavRecorder = new WavRecorder();
+            }
+            wavRecorder.start(audioFile);
             isRecording = true;
             btnRecord.setText(R.string.btn_stop_recording);
             tvStatus.setText(R.string.status_recording);
-            
             Log.d(TAG, "Запись начата: " + audioFile.getAbsolutePath());
-            
         } catch (IOException e) {
-            Log.e(TAG, "Ошибка при подготовке MediaRecorder", e);
+            Log.e(TAG, "Ошибка при начале записи WAV", e);
             Toast.makeText(this, "Ошибка при начале записи", Toast.LENGTH_SHORT).show();
-            releaseMediaRecorder();
+            isRecording = false;
+            btnRecord.setText(R.string.btn_start_recording);
+            tvStatus.setText(R.string.status_ready);
         }
     }
 
     private void stopRecording() {
-        if (mediaRecorder != null) {
-            try {
-                mediaRecorder.stop();
-                Log.d(TAG, "Запись остановлена");
-            } catch (RuntimeException e) {
-                Log.e(TAG, "Ошибка при остановке записи", e);
-                // Удаляем невалидный файл
-                if (audioFile != null && audioFile.exists()) {
-                    audioFile.delete();
-                }
-            } finally {
-                releaseMediaRecorder();
-            }
+        if (wavRecorder != null) {
+            wavRecorder.stop();
+            Log.d(TAG, "Запись остановлена");
         }
-        
         isRecording = false;
         btnRecord.setText(R.string.btn_start_recording);
-        
-        // Проверяем, что файл был создан и существует
-        if (audioFile != null && audioFile.exists() && audioFile.length() > 0) {
+
+        if (audioFile != null && audioFile.exists() && audioFile.length() > WavRecorder.WAV_HEADER_SIZE) {
             tvStatus.setText(R.string.status_recording_completed);
             hasRecording = true;
-            
-            // Активируем кнопку анализа после завершения записи
             btnAnalyze.setEnabled(true);
             btnAnalyze.setAlpha(1.0f);
-            
             Log.d(TAG, "Аудиофайл сохранен: " + audioFile.getAbsolutePath() + " (размер: " + audioFile.length() + " байт)");
         } else {
             tvStatus.setText(R.string.status_ready);
             hasRecording = false;
-            Toast.makeText(this, "Запись не удалась", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void releaseMediaRecorder() {
-        if (mediaRecorder != null) {
-            try {
-                mediaRecorder.release();
-            } catch (Exception e) {
-                Log.e(TAG, "Ошибка при освобождении MediaRecorder", e);
+            if (audioFile != null && audioFile.exists()) {
+                audioFile.delete();
             }
-            mediaRecorder = null;
+            Toast.makeText(this, "Запись не удалась", Toast.LENGTH_SHORT).show();
         }
     }
 
     /**
      * Сброс состояния формы к начальному виду
      */
+    /**
+     * Включить/отключить все кнопки и показать статус «Анализ» во время выполнения анализа.
+     */
+    private void setAnalyzingState(boolean analyzing) {
+        btnRecord.setEnabled(!analyzing);
+        btnRecord.setAlpha(analyzing ? 0.5f : 1.0f);
+        btnAnalyze.setEnabled(!analyzing);
+        btnAnalyze.setAlpha(analyzing ? 0.5f : 1.0f);
+        btnCancel.setEnabled(!analyzing);
+        btnCancel.setAlpha(analyzing ? 0.5f : 1.0f);
+        tvStatus.setText(analyzing ? R.string.btn_analyze : R.string.status_ready);
+    }
+
     private void resetState() {
         // Останавливаем запись, если она идет
         if (isRecording) {
@@ -231,6 +247,10 @@ public class VowelPhonationActivity extends AppCompatActivity {
         // Деактивируем кнопку анализа
         btnAnalyze.setEnabled(false);
         btnAnalyze.setAlpha(0.5f);
+        btnRecord.setEnabled(true);
+        btnRecord.setAlpha(1.0f);
+        btnCancel.setEnabled(true);
+        btnCancel.setAlpha(1.0f);
         
         // Удаляем предыдущий аудиофайл, если он был сохранен
         deleteAudioFile();
@@ -263,29 +283,68 @@ public class VowelPhonationActivity extends AppCompatActivity {
     }
 
     /**
-     * Метод для выполнения анализа фонации гласных
-     * Здесь вы добавите свой код анализа
+     * Анализ фонации гласных: парсер WAV (запись с микрофона) → признаки → модель голоса ONNX.
      * @return вероятность наличия болезни Паркинсона в процентах (0.0 - 100.0)
      */
     private double performAnalysis() {
-        // Получаем путь к аудиофайлу
         String audioFilePath = getAudioFilePath();
-        
         if (audioFilePath == null) {
-            Toast.makeText(this, "Аудиофайл не найден", Toast.LENGTH_SHORT).show();
+            Log.w(TAG, "Нет записанного аудио");
             return 0.0;
         }
-        
-        Log.d(TAG, "Начинаем анализ файла: " + audioFilePath);
-        
-        // TODO: Добавьте здесь ваш код анализа фонации гласных
-        // Пример: вызов Python функции для анализа
-        // Python py = Python.getInstance();
-        // PyObject module = py.getModule("your_analysis_module");
-        // PyObject result = module.callAttr("analyze_vowel_phonation", audioFilePath);
-        // return result.toDouble();
-        
-        // Временное значение для тестирования
-        return 0.0; // Замените на реальный результат анализа
+        Log.d(TAG, "Анализ файла (голос): " + audioFilePath);
+
+        Map<String, Object> features = getVoiceFeaturesFromPython(audioFilePath);
+        if (features == null) {
+            lastFeatures = null;
+            return 0.0;
+        }
+
+        // Сохраняем характеристики для передачи на форму результатов
+        lastFeatures = new HashMap<>(features);
+
+        ParkinsonOnnxPredictor predictor = null;
+        try {
+            predictor = new ParkinsonOnnxPredictor(this, ParkinsonOnnxPredictor.ModelType.VOICE);
+            double prob = predictor.predict(features);
+            if (prob < 0) {
+                Log.e(TAG, "Ошибка предсказания модели");
+                return 0.0;
+            }
+            double percent = prob * 100.0;
+            Log.d(TAG, "Вероятность (голос): " + percent + "%");
+            return percent;
+        } catch (Exception e) {
+            Log.e(TAG, "Ошибка загрузки/запуска модели голоса", e);
+            return 0.0;
+        } finally {
+            if (predictor != null) predictor.close();
+        }
+    }
+
+    private Map<String, Object> getVoiceFeaturesFromPython(String wavPath) {
+        try {
+            Python py = Python.getInstance();
+            PyObject module = py.getModule("audio_analysis");
+            PyObject dataPy = module.callAttr("get_voice_features", wavPath);
+            Map<PyObject, PyObject> raw = dataPy.asMap();
+            Map<String, Object> features = new HashMap<>();
+            for (Map.Entry<PyObject, PyObject> entry : raw.entrySet()) {
+                String key = entry.getKey().toString();
+                if ("FILEPATH".equals(key)) continue;
+                PyObject v = entry.getValue();
+                if (v != null) {
+                    try {
+                        features.put(key, v.toDouble());
+                    } catch (Exception e) {
+                        features.put(key, v.toString());
+                    }
+                }
+            }
+            return features;
+        } catch (Exception e) {
+            Log.e(TAG, "Ошибка вызова парсера (audio_analysis.get_voice_features)", e);
+            return null;
+        }
     }
 }

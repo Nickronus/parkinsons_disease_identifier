@@ -9,29 +9,34 @@
     tools:context=".MainActivity">
 
     <!-- Кнопка "Анализ речи" - по центру экрана, большая, синяя -->
+
+    <!-- Кнопка "Анализ фонации гласных" - по центру экрана, под первой, большая, синяя -->
+
+    <!-- Кнопка "О программе" - снизу, серая -->
+
     <Button
         android:id="@+id/btnSpeechAnalysis"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
+        android:backgroundTint="#2196F3"
+        android:elevation="4dp"
+        android:minHeight="80dp"
+        android:padding="28dp"
+        android:stateListAnimator="@null"
         android:text="@string/btn_speech_analysis"
+        android:textColor="#FFFFFF"
         android:textSize="22sp"
         android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#2196F3"
-        android:padding="28dp"
-        android:minHeight="80dp"
-        android:elevation="4dp"
-        android:stateListAnimator="@null"
+        app:layout_constraintBottom_toTopOf="@id/btnVowelPhonation"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btnVowelPhonation"
-        app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintVertical_bias="0.4" />
+        app:layout_constraintVertical_bias="0.4"
+        app:layout_constraintVertical_chainStyle="packed" />
 
-    <!-- Кнопка "Анализ фонации гласных" - по центру экрана, под первой, большая, синяя -->
     <Button
         android:id="@+id/btnVowelPhonation"
         android:layout_width="0dp"
@@ -39,21 +44,21 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="24dp"
+        android:backgroundTint="#2196F3"
+        android:elevation="4dp"
+        android:minHeight="80dp"
+        android:padding="28dp"
+        android:stateListAnimator="@null"
         android:text="@string/btn_vowel_phonation"
+        android:textColor="#FFFFFF"
         android:textSize="22sp"
         android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#2196F3"
-        android:padding="28dp"
-        android:minHeight="80dp"
-        android:elevation="4dp"
-        android:stateListAnimator="@null"
+        app:layout_constraintBottom_toTopOf="@id/btnAbout"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnSpeechAnalysis"
-        app:layout_constraintBottom_toTopOf="@id/btnAbout" />
+        app:layout_constraintTop_toBottomOf="@id/btnSpeechAnalysis" />
 
-    <!-- Кнопка "О программе" - снизу, серая -->
     <Button
         android:id="@+id/btnAbout"
         android:layout_width="200dp"

@@ -29,24 +29,22 @@
             android:textSize="16sp"
             android:lineSpacingExtra="4dp"
             android:textColor="#333333"
-            android:padding="8dp" />
+            android:padding="8dp"
+            android:autoLink="web"
+            android:linksClickable="true" />
     </ScrollView>
 
-    <!-- Кнопка Понятно - синяя, снизу -->
+    <!-- Кнопка Понятно - размер и отступ как у кнопки "О программе" -->
     <Button
         android:id="@+id/btnUnderstood"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
+        android:layout_width="200dp"
+        android:layout_height="56dp"
         android:layout_marginBottom="24dp"
         android:text="@string/btn_understood"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="#FFFFFF"
         android:backgroundTint="#2196F3"
-        android:padding="16dp"
-        android:minHeight="56dp"
         android:elevation="4dp"
         android:stateListAnimator="@null"
         app:layout_constraintEnd_toEndOf="parent"

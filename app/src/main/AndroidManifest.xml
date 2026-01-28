@@ -22,6 +22,7 @@
         <activity
             android:name=".welcome_activity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,30 +34,42 @@
         <activity
             android:name=".MainActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <!-- SpeechAnalysisActivity - экран анализа речи -->
         <activity
             android:name=".SpeechAnalysisActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <!-- AnalysisResultsActivity - экран результатов анализа -->
         <activity
             android:name=".AnalysisResultsActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <!-- VowelPhonationActivity - экран анализа фонации гласных -->
         <activity
             android:name=".VowelPhonationActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <!-- AboutActivity - экран "О программе" -->
         <activity
             android:name=".AboutActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <!-- DetailsActivity - экран подробных характеристик -->
+        <activity
+            android:name=".DetailsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
     </application>

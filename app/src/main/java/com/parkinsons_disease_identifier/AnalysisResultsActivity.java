@@ -17,6 +17,7 @@ public class AnalysisResultsActivity extends AppCompatActivity {
     private TextView tvProbability;
     private Button btnRepeat;
     private Button btnFinish;
+    private Button btnDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,7 @@ public class AnalysisResultsActivity extends AppCompatActivity {
         tvProbability = findViewById(R.id.tvProbability);
         btnRepeat = findViewById(R.id.btnRepeat);
         btnFinish = findViewById(R.id.btnFinish);
+        btnDetails = findViewById(R.id.btnDetails);
     }
 
     private void setupButtons() {
@@ -60,6 +62,20 @@ public class AnalysisResultsActivity extends AppCompatActivity {
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();
+            }
+        });
+
+        btnDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Открываем форму с подробными характеристиками
+                Intent intent = new Intent(AnalysisResultsActivity.this, DetailsActivity.class);
+                // Передаём все характеристики из текущего Intent
+                Bundle extras = getIntent().getExtras();
+                if (extras != null) {
+                    intent.putExtras(extras);
+                }
+                startActivity(intent);
             }
         });
     }

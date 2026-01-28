@@ -3,7 +3,6 @@ package com.parkinsons_disease_identifier;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,17 +23,14 @@ import com.chaquo.python.Python;
 import com.chaquo.python.PyObject;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SpeechAnalysisActivity extends AppCompatActivity {
 
     private static final String TAG = "SpeechAnalysisActivity";
     private static final String AUDIO_FILE_NAME = "speech_recording.wav";
-    /** Тестовый WAV из папки audiofiles (Parselmouth не читает 3GP/AMR запись) */
-    private static final String ASSET_TEST_WAV = "VU2RLOABREE42M240120171952.wav";
 
     private Button btnRecord;
     private Button btnCancel;
@@ -42,9 +38,10 @@ public class SpeechAnalysisActivity extends AppCompatActivity {
     private TextView tvStatus;
     private boolean isRecording = false;
     private boolean hasRecording = false;
-    
-    private MediaRecorder mediaRecorder;
+
+    private WavRecorder wavRecorder;
     private File audioFile;
+    private Map<String, Object> lastFeatures = null; // Сохраняем последние характеристики
     
     // Launcher для запроса разрешения на запись аудио
     private ActivityResultLauncher<String> requestPermissionLauncher =
@@ -82,8 +79,9 @@ public class SpeechAnalysisActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Освобождаем ресурсы MediaRecorder
-        releaseMediaRecorder();
+        if (wavRecorder != null) {
+            wavRecorder.stop();
+        }
     }
 
     private void initViews() {
@@ -115,13 +113,45 @@ public class SpeechAnalysisActivity extends AppCompatActivity {
         btnAnalyze.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Выполняем анализ (здесь будет ваш код)
-                double probability = performAnalysis();
-                
-                // Переход к форме результатов с передачей процентов
-                Intent intent = new Intent(SpeechAnalysisActivity.this, AnalysisResultsActivity.class);
-                intent.putExtra("probability", probability);
-                startActivity(intent);
+                setAnalyzingState(true);
+                // Даём интерфейсу отрисоваться, затем анализ в фоне
+                v.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                final double probability = performAnalysis();
+                                final Map<String, Object> features = lastFeatures;
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Intent intent = new Intent(SpeechAnalysisActivity.this, AnalysisResultsActivity.class);
+                                        intent.putExtra("probability", probability);
+                                        // Передаём характеристики
+                                        if (features != null) {
+                                            for (Map.Entry<String, Object> entry : features.entrySet()) {
+                                                Object value = entry.getValue();
+                                                if (value instanceof Double) {
+                                                    intent.putExtra(entry.getKey(), (Double) value);
+                                                } else if (value instanceof Float) {
+                                                    intent.putExtra(entry.getKey(), (Float) value);
+                                                } else if (value instanceof Integer) {
+                                                    intent.putExtra(entry.getKey(), (Integer) value);
+                                                } else if (value instanceof Long) {
+                                                    intent.putExtra(entry.getKey(), (Long) value);
+                                                } else if (value instanceof String) {
+                                                    intent.putExtra(entry.getKey(), (String) value);
+                                                }
+                                            }
+                                        }
+                                        startActivity(intent);
+                                    }
+                                });
+                            }
+                        }).start();
+                    }
+                });
             }
         });
     }
@@ -144,86 +174,64 @@ public class SpeechAnalysisActivity extends AppCompatActivity {
 
     private void startRecording() {
         try {
-            // Создаем файл для записи во внутреннем хранилище приложения
             audioFile = new File(getFilesDir(), AUDIO_FILE_NAME);
-            
-            // Освобождаем предыдущий MediaRecorder, если он существует
-            releaseMediaRecorder();
-            
-            // Создаем новый MediaRecorder
-            mediaRecorder = new MediaRecorder();
-            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            mediaRecorder.setOutputFile(audioFile.getAbsolutePath());
-            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            
-            // Подготавливаем и запускаем запись
-            mediaRecorder.prepare();
-            mediaRecorder.start();
-            
+            if (wavRecorder == null) {
+                wavRecorder = new WavRecorder();
+            }
+            wavRecorder.start(audioFile);
             isRecording = true;
             btnRecord.setText(R.string.btn_stop_recording);
             tvStatus.setText(R.string.status_recording);
-            
             Log.d(TAG, "Запись начата: " + audioFile.getAbsolutePath());
-            
         } catch (IOException e) {
-            Log.e(TAG, "Ошибка при подготовке MediaRecorder", e);
+            Log.e(TAG, "Ошибка при начале записи WAV", e);
             Toast.makeText(this, "Ошибка при начале записи", Toast.LENGTH_SHORT).show();
-            releaseMediaRecorder();
+            isRecording = false;
+            btnRecord.setText(R.string.btn_start_recording);
+            tvStatus.setText(R.string.status_ready);
         }
     }
 
     private void stopRecording() {
-        if (mediaRecorder != null) {
-            try {
-                mediaRecorder.stop();
-                Log.d(TAG, "Запись остановлена");
-            } catch (RuntimeException e) {
-                Log.e(TAG, "Ошибка при остановке записи", e);
-                // Удаляем невалидный файл
-                if (audioFile != null && audioFile.exists()) {
-                    audioFile.delete();
-                }
-            } finally {
-                releaseMediaRecorder();
-            }
+        if (wavRecorder != null) {
+            wavRecorder.stop();
+            Log.d(TAG, "Запись остановлена");
         }
-        
         isRecording = false;
         btnRecord.setText(R.string.btn_start_recording);
-        
-        // Проверяем, что файл был создан и существует
-        if (audioFile != null && audioFile.exists() && audioFile.length() > 0) {
+
+        if (audioFile != null && audioFile.exists() && audioFile.length() > WavRecorder.WAV_HEADER_SIZE) {
             tvStatus.setText(R.string.status_recording_completed);
             hasRecording = true;
-            
-            // Активируем кнопку анализа после завершения записи
             btnAnalyze.setEnabled(true);
             btnAnalyze.setAlpha(1.0f);
-            
             Log.d(TAG, "Аудиофайл сохранен: " + audioFile.getAbsolutePath() + " (размер: " + audioFile.length() + " байт)");
         } else {
             tvStatus.setText(R.string.status_ready);
             hasRecording = false;
-            Toast.makeText(this, "Запись не удалась", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void releaseMediaRecorder() {
-        if (mediaRecorder != null) {
-            try {
-                mediaRecorder.release();
-            } catch (Exception e) {
-                Log.e(TAG, "Ошибка при освобождении MediaRecorder", e);
+            if (audioFile != null && audioFile.exists()) {
+                audioFile.delete();
             }
-            mediaRecorder = null;
+            Toast.makeText(this, "Запись не удалась", Toast.LENGTH_SHORT).show();
         }
     }
 
     /**
      * Сброс состояния формы к начальному виду
      */
+    /**
+     * Включить/отключить все кнопки и показать статус «Анализ» во время выполнения анализа.
+     */
+    private void setAnalyzingState(boolean analyzing) {
+        btnRecord.setEnabled(!analyzing);
+        btnRecord.setAlpha(analyzing ? 0.5f : 1.0f);
+        btnAnalyze.setEnabled(!analyzing);
+        btnAnalyze.setAlpha(analyzing ? 0.5f : 1.0f);
+        btnCancel.setEnabled(!analyzing);
+        btnCancel.setAlpha(analyzing ? 0.5f : 1.0f);
+        tvStatus.setText(analyzing ? R.string.btn_analyze : R.string.status_ready);
+    }
+
     private void resetState() {
         // Останавливаем запись, если она идет
         if (isRecording) {
@@ -239,6 +247,10 @@ public class SpeechAnalysisActivity extends AppCompatActivity {
         // Деактивируем кнопку анализа
         btnAnalyze.setEnabled(false);
         btnAnalyze.setAlpha(0.5f);
+        btnRecord.setEnabled(true);
+        btnRecord.setAlpha(1.0f);
+        btnCancel.setEnabled(true);
+        btnCancel.setAlpha(1.0f);
         
         // Удаляем предыдущий аудиофайл, если он был сохранен
         deleteAudioFile();
@@ -271,53 +283,69 @@ public class SpeechAnalysisActivity extends AppCompatActivity {
     }
 
     /**
-     * Копирует тестовый WAV из assets (папка audiofiles) во внутреннее хранилище
-     * и возвращает путь к нему. Parselmouth поддерживает только WAV, а запись идёт в 3GP/AMR.
-     */
-    private String getTestWavPathFromAssets() {
-        File outFile = new File(getFilesDir(), "test_speech_from_assets.wav");
-        if (outFile.exists()) {
-            return outFile.getAbsolutePath();
-        }
-        try (InputStream in = getAssets().open(ASSET_TEST_WAV);
-             OutputStream out = new FileOutputStream(outFile)) {
-            byte[] buf = new byte[8192];
-            int n;
-            while ((n = in.read(buf)) > 0) {
-                out.write(buf, 0, n);
-            }
-            Log.d(TAG, "Скопирован тестовый WAV из assets: " + outFile.getAbsolutePath());
-            return outFile.getAbsolutePath();
-        } catch (IOException e) {
-            Log.e(TAG, "Ошибка копирования тестового WAV из assets", e);
-            return null;
-        }
-    }
-
-    /**
-     * Метод для выполнения анализа речи
-     * Используется WAV из папки audiofiles (assets), т.к. запись в 3GP/AMR не поддерживается Parselmouth.
+     * Анализ речи: парсер WAV (запись с микрофона) → признаки → модель речи ONNX.
      * @return вероятность наличия болезни Паркинсона в процентах (0.0 - 100.0)
      */
     private double performAnalysis() {
-        String audioFilePath = getTestWavPathFromAssets();
+        String audioFilePath = getAudioFilePath();
         if (audioFilePath == null) {
-            Toast.makeText(this, "Тестовый аудиофайл не найден в assets", Toast.LENGTH_SHORT).show();
+            Log.w(TAG, "Нет записанного аудио");
             return 0.0;
         }
-        Log.d(TAG, "Начинаем анализ файла (из audiofiles): " + audioFilePath);
+        Log.d(TAG, "Анализ файла (речь): " + audioFilePath);
 
+        Map<String, Object> features = getSpeechFeaturesFromPython(audioFilePath);
+        if (features == null) {
+            lastFeatures = null;
+            return 0.0;
+        }
+
+        // Сохраняем характеристики для передачи на форму результатов
+        lastFeatures = new HashMap<>(features);
+
+        ParkinsonOnnxPredictor predictor = null;
+        try {
+            predictor = new ParkinsonOnnxPredictor(this, ParkinsonOnnxPredictor.ModelType.SPEECH);
+            double prob = predictor.predict(features);
+            if (prob < 0) {
+                Log.e(TAG, "Ошибка предсказания модели");
+                return 0.0;
+            }
+            double percent = prob * 100.0;
+            Log.d(TAG, "Вероятность (речь): " + percent + "%");
+            return percent;
+        } catch (Exception e) {
+            Log.e(TAG, "Ошибка загрузки/запуска модели речи", e);
+            return 0.0;
+        } finally {
+            if (predictor != null) predictor.close();
+        }
+    }
+
+    /** Вызов Python-парсера и получение словаря признаков для речи. */
+    private Map<String, Object> getSpeechFeaturesFromPython(String wavPath) {
         try {
             Python py = Python.getInstance();
-            PyObject module = py.getModule("praat_test");
-            PyObject result = module.callAttr("analyze_speech_parselmouth", audioFilePath);
-            double value = result.toDouble();
-            Log.d(TAG, "Результат praat_test: " + value);
-            return value;
+            PyObject module = py.getModule("audio_analysis");
+            PyObject dataPy = module.callAttr("get_speech_features", wavPath);
+            Map<PyObject, PyObject> raw = dataPy.asMap();
+            Map<String, Object> features = new HashMap<>();
+            for (Map.Entry<PyObject, PyObject> entry : raw.entrySet()) {
+                String key = entry.getKey().toString();
+                if ("FILEPATH".equals(key)) continue;
+                PyObject v = entry.getValue();
+                if (v != null) {
+                    try {
+                        features.put(key, v.toDouble());
+                    } catch (Exception e) {
+                        features.put(key, v.toString());
+                    }
+                }
+            }
+            return features;
         } catch (Exception e) {
-            Log.e(TAG, "Ошибка вызова praat_test", e);
-            Toast.makeText(this, "Ошибка анализа: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            return 0.0;
+            Log.e(TAG, "Ошибка вызова парсера (audio_analysis.get_speech_features)", e);
+            return null;
         }
     }
 }

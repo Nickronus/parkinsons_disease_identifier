@@ -11,9 +11,13 @@ class FileParser:
     """    
     def __init__(self):
         characteristic_extractor_creator: AbstractCharacteristicExtractorCreator = PraatCharacteristicExtractorCreator()
-        characteristic_saver: ICharacteristicSaver = FileCharacteristicSaver()
-        self.__voice_characteristic_processor = VoiceCharacteristicProcessor(characteristic_extractor_creator, characteristic_saver)
-        self.__speech_characteristic_processor = SpeechCharacteristicProcessor(characteristic_extractor_creator, characteristic_saver)
+        self.__characteristic_saver: ICharacteristicSaver = FileCharacteristicSaver()
+        self.__voice_characteristic_processor = VoiceCharacteristicProcessor(characteristic_extractor_creator, self.__characteristic_saver)
+        self.__speech_characteristic_processor = SpeechCharacteristicProcessor(characteristic_extractor_creator, self.__characteristic_saver)
+
+    def get_data(self) -> dict[str, str | float]:
+        """Вернуть последнюю сохранённую строку характеристик после parse_voice или parse_speech."""
+        return self.__characteristic_saver.get_data()
 
     def parse_voice(self, file_path: str):    
         output_filename = ""

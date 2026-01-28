@@ -8,45 +8,55 @@
     android:padding="24dp"
     tools:context=".VowelPhonationActivity">
 
-    <!-- Инструкция -->
-    <TextView
-        android:id="@+id/tvInstruction"
+    <!-- Прокручиваемая область: только инструкция -->
+    <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/instruction_vowel_phonation"
-        android:textSize="20sp"
-        android:textColor="#333333"
-        android:lineSpacingExtra="6dp"
-        android:gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tvStatus"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- Статус записи -->
+        <TextView
+            android:id="@+id/tvInstruction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="32dp"
+            android:paddingBottom="16dp"
+            android:text="@string/instruction_vowel_phonation"
+            android:textSize="20sp"
+            android:textColor="#333333"
+            android:lineSpacingExtra="6dp"
+            android:gravity="center" />
+    </ScrollView>
+
+    <!-- Статус записи — зафиксирован над кнопками -->
     <TextView
         android:id="@+id/tvStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/status_ready"
-        android:textSize="20sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="#2196F3"
+        app:layout_constraintBottom_toTopOf="@id/btnRecord"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvInstruction" />
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Кнопка начать/остановить запись - большая и ниже -->
+    <!-- Кнопки привязаны к нижнему краю -->
+    <!-- Кнопка начать/остановить запись -->
     <Button
         android:id="@+id/btnRecord"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="80dp"
         android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/btn_start_recording"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -58,16 +68,16 @@
         android:stateListAnimator="@null"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvStatus" />
+        app:layout_constraintBottom_toTopOf="@id/btnAnalyze" />
 
-    <!-- Кнопка Анализ - большая -->
+    <!-- Кнопка Анализ -->
     <Button
         android:id="@+id/btnAnalyze"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
         android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/btn_analyze"
         android:textSize="22sp"
         android:textStyle="bold"
@@ -80,29 +90,23 @@
         android:enabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnRecord" />
+        app:layout_constraintBottom_toTopOf="@id/btnCancel" />
 
-    <!-- Кнопка отмена - снизу -->
+    <!-- Кнопка отмена - привязана к нижнему краю -->
     <Button
         android:id="@+id/btnCancel"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
+        android:layout_width="200dp"
+        android:layout_height="56dp"
         android:layout_marginBottom="24dp"
         android:text="@string/btn_cancel"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="#FFFFFF"
         android:backgroundTint="#9E9E9E"
-        android:padding="16dp"
-        android:minHeight="56dp"
         android:elevation="4dp"
         android:stateListAnimator="@null"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnAnalyze"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
