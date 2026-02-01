@@ -14,7 +14,7 @@
         android:layout_height="0dp"
         android:fillViewport="true"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btnDetails"
+        app:layout_constraintBottom_toTopOf="@id/btnRepeat"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -66,14 +66,51 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Кнопка Подробнее — побольше -->
+    <!-- Ряд кнопок: Повторить слева, Завершить справа -->
+    <Button
+        android:id="@+id/btnRepeat"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/btn_repeat"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#2196F3"
+        android:padding="28dp"
+        android:minHeight="80dp"
+        android:elevation="4dp"
+        android:stateListAnimator="@null"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btnFinish"
+        app:layout_constraintBottom_toTopOf="@id/btnDetails" />
+
+    <Button
+        android:id="@+id/btnFinish"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/btn_finish"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#757575"
+        android:padding="28dp"
+        android:minHeight="80dp"
+        android:elevation="4dp"
+        android:stateListAnimator="@null"
+        app:layout_constraintStart_toEndOf="@id/btnRepeat"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btnDetails" />
+
+    <!-- Кнопка Подробнее — снизу, на всю ширину -->
     <Button
         android:id="@+id/btnDetails"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="24dp"
         android:text="@string/btn_details"
         android:textSize="22sp"
         android:textStyle="bold"
@@ -83,51 +120,8 @@
         android:minHeight="80dp"
         android:elevation="2dp"
         android:stateListAnimator="@null"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btnRepeat" />
-
-    <!-- Кнопки привязаны к нижнему краю, побольше -->
-    <!-- Кнопка Повторить -->
-    <Button
-        android:id="@+id/btnRepeat"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="16dp"
-        android:text="@string/btn_repeat"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#2196F3"
-        android:padding="28dp"
-        android:minHeight="80dp"
-        android:elevation="4dp"
-        android:stateListAnimator="@null"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btnFinish" />
-
-    <!-- Кнопка Завершить -->
-    <Button
-        android:id="@+id/btnFinish"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp"
-        android:text="@string/btn_finish"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#757575"
-        android:padding="28dp"
-        android:minHeight="80dp"
-        android:elevation="4dp"
-        android:stateListAnimator="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

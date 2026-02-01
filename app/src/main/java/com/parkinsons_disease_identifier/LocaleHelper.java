@@ -12,6 +12,8 @@ public class LocaleHelper {
 
     private static final String PREFS_NAME = "SettingsPrefs";
     private static final String KEY_LANGUAGE = "language_en";
+    /** По умолчанию английский выключен (используется русский). */
+    private static final boolean DEFAULT_LANGUAGE_EN = false;
 
     public static Context applyLocale(Context context) {
         return updateResources(context, getLanguage(context));
@@ -19,7 +21,7 @@ public class LocaleHelper {
 
     private static String getLanguage(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        return prefs.getBoolean(KEY_LANGUAGE, false) ? "en" : "ru";
+        return prefs.getBoolean(KEY_LANGUAGE, DEFAULT_LANGUAGE_EN) ? "en" : "ru";
     }
 
     private static Context updateResources(Context context, String language) {

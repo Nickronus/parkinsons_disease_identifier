@@ -34,6 +34,7 @@ public class SettingsActivity extends AppCompatActivity {
         switchLanguage = findViewById(R.id.switch_language);
         Button btnOk = findViewById(R.id.btn_ok);
 
+        // По умолчанию английский выключен (русский интерфейс)
         boolean isEnglish = prefs.getBoolean(KEY_LANGUAGE, false);
         switchLanguage.setChecked(isEnglish);
 
