@@ -7,6 +7,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -92,10 +93,16 @@ public class DetailsActivity extends AppCompatActivity {
             tvCharacteristic.setLayoutParams(new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT));
-            tvCharacteristic.setPadding(16, 12, 16, 12);
-            tvCharacteristic.setTextSize(16f);
+            int padH = (int) (24 * getResources().getDisplayMetrics().density);
+            int padV = (int) (20 * getResources().getDisplayMetrics().density);
+            tvCharacteristic.setPadding(padH, padV, padH, padV);
+            tvCharacteristic.setTextSize(18f);
             tvCharacteristic.setTextColor(0xFF333333);
             tvCharacteristic.setText(String.format("%s: %s", key, valueStr));
+            tvCharacteristic.setClickable(true);
+            tvCharacteristic.setFocusable(true);
+            final String featureKey = key;
+            tvCharacteristic.setOnClickListener(v -> showDescriptionDialog(featureKey));
             
             // Добавляем разделитель
             View divider = new View(this);
@@ -107,5 +114,22 @@ public class DetailsActivity extends AppCompatActivity {
             llCharacteristics.addView(tvCharacteristic);
             llCharacteristics.addView(divider);
         }
+    }
+
+    private void showDescriptionDialog(String featureKey) {
+        int resId = getDescriptionResId(featureKey);
+        String message = resId != 0
+                ? getString(resId)
+                : getString(R.string.details_no_description);
+        new AlertDialog.Builder(this)
+                .setTitle(featureKey)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
+    }
+
+    private int getDescriptionResId(String featureKey) {
+        String resName = "desc_" + featureKey.toLowerCase();
+        return getResources().getIdentifier(resName, "string", getPackageName());
     }
 }
