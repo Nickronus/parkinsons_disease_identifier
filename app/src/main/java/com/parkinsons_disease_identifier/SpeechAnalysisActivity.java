@@ -43,6 +43,8 @@ public class SpeechAnalysisActivity extends AppCompatActivity {
     private TextView tvStatus;
     private boolean isRecording = false;
     private boolean hasRecording = false;
+    private boolean isWaitingForFilePicker = false;
+    private boolean fileJustLoaded = false;
 
     private WavRecorder wavRecorder;
     private File audioFile;
@@ -63,6 +65,8 @@ public class SpeechAnalysisActivity extends AppCompatActivity {
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
                     loadAudioFromUri(uri);
+                } else {
+                    isWaitingForFilePicker = false;
                 }
             });
 
@@ -90,8 +94,14 @@ public class SpeechAnalysisActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Сбрасываем состояние при возврате к форме (например, после нажатия "Повторить")
-        resetState();
+        // Не сбрасываем при возврате из выбора файла или сразу после загрузки
+        if (fileJustLoaded) {
+            fileJustLoaded = false;
+            return;
+        }
+        if (!isWaitingForFilePicker) {
+            resetState();
+        }
     }
 
     @Override
@@ -115,7 +125,10 @@ public class SpeechAnalysisActivity extends AppCompatActivity {
     }
 
     private void setupButtons() {
-        btnLoadFile.setOnClickListener(v -> pickAudioLauncher.launch("audio/*"));
+        btnLoadFile.setOnClickListener(v -> {
+            isWaitingForFilePicker = true;
+            pickAudioLauncher.launch("audio/*");
+        });
 
         btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -297,11 +310,13 @@ public class SpeechAnalysisActivity extends AppCompatActivity {
                 out.write(buf, 0, len);
             }
             hasRecording = true;
+            fileJustLoaded = true;
             tvStatus.setText(R.string.status_recording_completed);
             btnAnalyze.setEnabled(true);
             btnAnalyze.setAlpha(1.0f);
             Toast.makeText(this, getString(R.string.toast_file_loaded), Toast.LENGTH_SHORT).show();
             Log.d(TAG, "Аудиофайл загружен: " + audioFile.getAbsolutePath());
+            btnAnalyze.post(() -> isWaitingForFilePicker = false);
         } catch (IOException e) {
             Log.e(TAG, "Ошибка загрузки аудиофайла", e);
             Toast.makeText(this, getString(R.string.toast_file_load_error), Toast.LENGTH_SHORT).show();
@@ -309,6 +324,7 @@ public class SpeechAnalysisActivity extends AppCompatActivity {
                 audioFile.delete();
             }
             audioFile = null;
+            isWaitingForFilePicker = false;
         }
     }
 
