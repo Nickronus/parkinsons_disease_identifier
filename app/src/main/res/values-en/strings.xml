@@ -15,8 +15,8 @@
     <string name="instruction_speech_analysis">Please record a short speech fragment. Speak clearly and naturally for 5-30 seconds.</string>
     
     <!-- Vowel Phonation Activity -->
-    <string name="instruction_vowel_phonation">Take a deep breath, start recording. Pronounce a vowel (a, o, u, e, i) as steadily as possible until your lungs are empty, then stop recording and run analysis.\n\n
-    Wait at least 30 seconds before repeat analysis. For repeat analysis, pronounce the vowel for 5 seconds.</string>
+    <string name="instruction_vowel_phonation">Breathe in as deeply as possible, start recording. Pronounce a vowel (a, o, u, e, i) as steadily as possible until your lungs are empty, then stop recording and run analysis.\n\n
+    Repeat analysis is recommended after 30 seconds. For repeat analysis, pronounce the vowel for 5 seconds.</string>
     <string name="btn_load_file">Load file</string>
     <string name="btn_start_recording">Start recording</string>
     <string name="btn_stop_recording">Stop recording</string>
@@ -28,7 +28,7 @@
     <string name="status_recording_completed">Recording completed</string>
     
     <!-- Analysis Results Activity -->
-    <string name="warning_not_diagnosis">Analysis results are not a diagnosis; professional consultation is required</string>
+    <string name="warning_not_diagnosis">This app is not a medical device and is not intended for diagnosis. Results must not be used for treatment decisions. If in doubt, consult a physician.</string>
     <string name="probability_label">Probability of Parkinson\'s disease:</string>
     <string name="btn_repeat">Repeat</string>
     <string name="btn_finish">Finish</string>
@@ -55,12 +55,12 @@
     <string name="desc_intensity_range">Intensity range — difference between maximum and minimum volume in recording. Reflects voice volume dynamics.</string>
     
     <!-- About Activity -->
-    <string name="about_text">About\n\nThe app is intended for preliminary analysis of speech features that may indicate Parkinson\'s disease using machine learning. Results are for informational purposes only and do not replace consultation with a qualified physician. For best results, record speech in a quiet environment using a quality microphone.\n\nModels\n\nModel accuracy was determined by 10-fold cross-validation. Vowel phonation model: 80.76% ± 9.66%, trained on 496 recordings (24 PD patients, 22 healthy). Speech model: 96.53% ± 1.18%, trained on 22582 recordings (441 PD patients, 286 healthy).\n\nSources\n\nhttps://ieee-dataport.org/open-access/italian-parkinsons-voice-and-speech\nhttps://www.kaggle.com/datasets/subhajournal/patient-health-detection-using-vocal-audio?resource=download\nhttps://archive.ics.uci.edu/dataset/489/parkinson+dataset+with+replicated+acoustic+features\nhttps://archive.ics.uci.edu/dataset/174/parkinsons\nhttps://archive.ics.uci.edu/dataset/189/parkinsons+telemonitoring\nhttps://archive.ics.uci.edu/dataset/470/parkinson+s+disease+classification\nhttps://openslr.org/60/\nhttps://openslr.org/45/\n\nSource code\n\nhttps://github.com/Nickronus/parkinsons_disease_identifier\n\nLicense\n\nGNU General Public License (GPL) Version 3\nhttps://github.com/Nickronus/parkinsons_disease_identifier/blob/main/LICENSE\n\nAuthor\n\nNikita Golubev\nnickronus@mail.ru\n\nVersion: 1.0</string>
+    <string name="about_text">About\n\nThe app is intended for preliminary analysis of speech features that may indicate Parkinson\'s disease using machine learning algorithms. This app is not a medical device and is not intended for diagnosis. Results must not be used for treatment decisions. If in doubt, consult a physician. For the most accurate results, it is recommended to record speech in a quiet environment using a quality microphone.\n\nModels\n\nModel accuracy was determined by 10-fold cross-validation. The vowel phonation model has accuracy 80.76% ± 9.66% and was trained on 496 recordings (24 PD patients, 22 healthy). The speech model has accuracy 96.53% ± 1.18% and was trained on 22582 recordings (441 PD patients, 286 healthy).\n\nSources\n\nhttps://ieee-dataport.org/open-access/italian-parkinsons-voice-and-speech\nhttps://www.kaggle.com/datasets/subhajournal/patient-health-detection-using-vocal-audio?resource=download\nhttps://archive.ics.uci.edu/dataset/489/parkinson+dataset+with+replicated+acoustic+features\nhttps://archive.ics.uci.edu/dataset/174/parkinsons\nhttps://archive.ics.uci.edu/dataset/189/parkinsons+telemonitoring\nhttps://archive.ics.uci.edu/dataset/470/parkinson+s+disease+classification\nhttps://openslr.org/60/\nhttps://openslr.org/45/\n\nSource code\n\nhttps://github.com/Nickronus/parkinsons_disease_identifier\n\nLicense\n\nGNU General Public License (GPL) Version 3\nhttps://github.com/Nickronus/parkinsons_disease_identifier/blob/main/LICENSE\n\nAuthor\n\nNikita Golubev\nnickronus@mail.ru\n\nVersion: 1.0</string>
     <string name="btn_understood">Understood</string>
     
     <!-- Welcome Activity -->
     <string name="welcome_attention">ATTENTION!</string>
-    <string name="welcome_text">This app is intended for preliminary analysis of speech features that may indicate Parkinson\'s disease.\n\nAnalysis results are not a medical diagnosis and do not replace consultation with a qualified specialist.\n\nThe app uses machine learning to evaluate speech characteristics, but accuracy may vary with recording quality and individual speech patterns.\n\nIf you suspect Parkinson\'s disease or other neurological conditions, consult a physician for a full medical examination.\n\nBy using this app, you acknowledge that you understand its limitations and intended use.</string>
+    <string name="welcome_text">This app is intended for preliminary analysis of speech features that may indicate Parkinson\'s disease.\n\nThis app is not a medical device and is not intended for diagnosis. Results must not be used for treatment decisions. If in doubt, consult a physician.\n\nThe app uses machine learning algorithms to evaluate speech characteristics, but accuracy may vary with recording quality and individual speech patterns.\n\nBy using this app, you acknowledge that you understand its limitations and intended use.</string>
     <string name="welcome_btn_ok">OK</string>
     
     <!-- Toast messages -->
