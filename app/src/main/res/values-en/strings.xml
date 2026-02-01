@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">parkinsons_disease_identifier</string>
+    <string name="app_name">PDA</string>
     <string name="btn_speech_analysis">Speech analysis</string>
     <string name="btn_vowel_phonation">Vowel phonation analysis</string>
     <string name="btn_vowel_phonation_with_warning">Vowel phonation analysis\nModel is sensitive to microphone quality, requires good hardware</string>
