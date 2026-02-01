@@ -121,7 +121,7 @@
         android:textSize="22sp"
         android:textStyle="bold"
         android:textColor="#FFFFFF"
-        android:backgroundTint="#9E9E9E"
+        android:backgroundTint="#757575"
         android:padding="28dp"
         android:minHeight="80dp"
         android:elevation="4dp"

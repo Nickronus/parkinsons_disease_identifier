@@ -1,7 +1,9 @@
 package com.parkinsons_disease_identifier;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,7 +25,9 @@ import com.chaquo.python.Python;
 import com.chaquo.python.PyObject;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +37,7 @@ public class VowelPhonationActivity extends AppCompatActivity {
     private static final String AUDIO_FILE_NAME = "vowel_phonation_recording.wav";
 
     private Button btnRecord;
+    private Button btnLoadFile;
     private Button btnCancel;
     private Button btnAnalyze;
     private TextView tvStatus;
@@ -49,9 +54,22 @@ public class VowelPhonationActivity extends AppCompatActivity {
                 if (isGranted) {
                     startRecording();
                 } else {
-                    Toast.makeText(this, "Разрешение на запись аудио необходимо для работы приложения", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getString(R.string.toast_permission_required), Toast.LENGTH_LONG).show();
                 }
             });
+
+    // Launcher для выбора аудиофайла
+    private ActivityResultLauncher<String> pickAudioLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null) {
+                    loadAudioFromUri(uri);
+                }
+            });
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.applyLocale(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +104,7 @@ public class VowelPhonationActivity extends AppCompatActivity {
 
     private void initViews() {
         btnRecord = findViewById(R.id.btnRecord);
+        btnLoadFile = findViewById(R.id.btnLoadFile);
         btnCancel = findViewById(R.id.btnCancel);
         btnAnalyze = findViewById(R.id.btnAnalyze);
         tvStatus = findViewById(R.id.tvStatus);
@@ -96,6 +115,8 @@ public class VowelPhonationActivity extends AppCompatActivity {
     }
 
     private void setupButtons() {
+        btnLoadFile.setOnClickListener(v -> pickAudioLauncher.launch("audio/*"));
+
         btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -185,7 +206,7 @@ public class VowelPhonationActivity extends AppCompatActivity {
             Log.d(TAG, "Запись начата: " + audioFile.getAbsolutePath());
         } catch (IOException e) {
             Log.e(TAG, "Ошибка при начале записи WAV", e);
-            Toast.makeText(this, "Ошибка при начале записи", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.toast_record_start_error), Toast.LENGTH_SHORT).show();
             isRecording = false;
             btnRecord.setText(R.string.btn_start_recording);
             tvStatus.setText(R.string.status_ready);
@@ -212,7 +233,7 @@ public class VowelPhonationActivity extends AppCompatActivity {
             if (audioFile != null && audioFile.exists()) {
                 audioFile.delete();
             }
-            Toast.makeText(this, "Запись не удалась", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.toast_record_failed), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -225,6 +246,8 @@ public class VowelPhonationActivity extends AppCompatActivity {
     private void setAnalyzingState(boolean analyzing) {
         btnRecord.setEnabled(!analyzing);
         btnRecord.setAlpha(analyzing ? 0.5f : 1.0f);
+        btnLoadFile.setEnabled(!analyzing);
+        btnLoadFile.setAlpha(analyzing ? 0.5f : 1.0f);
         btnAnalyze.setEnabled(!analyzing);
         btnAnalyze.setAlpha(analyzing ? 0.5f : 1.0f);
         btnCancel.setEnabled(!analyzing);
@@ -249,11 +272,44 @@ public class VowelPhonationActivity extends AppCompatActivity {
         btnAnalyze.setAlpha(0.5f);
         btnRecord.setEnabled(true);
         btnRecord.setAlpha(1.0f);
+        btnLoadFile.setEnabled(true);
+        btnLoadFile.setAlpha(1.0f);
         btnCancel.setEnabled(true);
         btnCancel.setAlpha(1.0f);
         
         // Удаляем предыдущий аудиофайл, если он был сохранен
         deleteAudioFile();
+    }
+
+    /**
+     * Загрузка аудио из выбранного URI (копирование в файл приложения)
+     */
+    private void loadAudioFromUri(Uri uri) {
+        if (isRecording) {
+            stopRecording();
+        }
+        audioFile = new File(getFilesDir(), AUDIO_FILE_NAME);
+        try (InputStream in = getContentResolver().openInputStream(uri);
+             FileOutputStream out = new FileOutputStream(audioFile)) {
+            byte[] buf = new byte[8192];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+            hasRecording = true;
+            tvStatus.setText(R.string.status_recording_completed);
+            btnAnalyze.setEnabled(true);
+            btnAnalyze.setAlpha(1.0f);
+            Toast.makeText(this, getString(R.string.toast_file_loaded), Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "Аудиофайл загружен: " + audioFile.getAbsolutePath());
+        } catch (IOException e) {
+            Log.e(TAG, "Ошибка загрузки аудиофайла", e);
+            Toast.makeText(this, getString(R.string.toast_file_load_error), Toast.LENGTH_SHORT).show();
+            if (audioFile != null && audioFile.exists()) {
+                audioFile.delete();
+            }
+            audioFile = null;
+        }
     }
 
     /**

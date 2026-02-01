@@ -67,7 +67,7 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="#FFFFFF"
-        android:backgroundTint="#9E9E9E"
+        android:backgroundTint="#757575"
         android:elevation="4dp"
         android:stateListAnimator="@null"
         app:layout_constraintEnd_toEndOf="parent"

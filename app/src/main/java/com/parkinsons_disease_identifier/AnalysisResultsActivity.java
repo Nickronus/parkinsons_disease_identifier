@@ -1,5 +1,6 @@
 package com.parkinsons_disease_identifier;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +19,11 @@ public class AnalysisResultsActivity extends AppCompatActivity {
     private Button btnRepeat;
     private Button btnFinish;
     private Button btnDetails;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.applyLocale(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

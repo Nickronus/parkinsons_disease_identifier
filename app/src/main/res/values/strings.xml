@@ -2,7 +2,14 @@
     <string name="app_name">parkinsons_disease_identifier</string>
     <string name="btn_speech_analysis">Анализ речи</string>
     <string name="btn_vowel_phonation">Анализ фонации гласных</string>
+    <string name="btn_vowel_phonation_with_warning">Анализ фонации гласных\nМодель чувствительна к микрофону, требуется качественная аппаратура</string>
     <string name="btn_about">О программе</string>
+    <string name="btn_settings">Настройки</string>
+    <string name="btn_ok">Хорошо</string>
+    
+    <!-- Settings Activity -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_language">English</string>
     
     <!-- Speech Analysis Activity -->
     <string name="instruction_speech_analysis">Пожалуйста, запишите небольшой фрагмент речи. Говорите четко и естественно в течение 5-30 секунд.</string>
@@ -10,6 +17,7 @@
     <!-- Vowel Phonation Activity -->
     <string name="instruction_vowel_phonation">Вдохните максимально глубоко, начните запись. Произносите гласную букву (а, о, у, э, и) максимально ровно, пока лёгкие не опустеют, после чего остановите запись и запустите анализ.\n\n
     Проводить повторный анализ рекомендуется через 30 секунд. При повторном анализе произносите гласную букву в течении 5 секунд.</string>
+    <string name="btn_load_file">Загрузить файл</string>
     <string name="btn_start_recording">Начать запись</string>
     <string name="btn_stop_recording">Остановить запись</string>
     <string name="btn_cancel">Отмена</string>
@@ -49,4 +57,16 @@
     <!-- About Activity -->
     <string name="about_text">О программе\n\nПриложение предназначено для предварительного анализа речевых признаков, которые могут указывать на болезнь Паркинсона с использованием алгоритмов машинного обучения. Результаты анализа носят информационный характер и не заменяют консультацию квалифицированного врача. Для получения наиболее точных результатов рекомендуется записывать речь в тихом помещении, используя качественный микрофон.\n\nМодели\n\nТочность моделей определялась методом десятикратной кросс-валидации. Модель анализа фонации гласных имеет точность 80,76% ± 9,66% и обучена на 496 аудиозаписях (24 человека с БП, 22 здоровых). Модель анализа речи имеет точность 96,53% ± 1,18% при обучении на 22582 аудиозаписях (441 человек с БП, 286 здоровых).\n\nИсточники\n\nhttps://ieee-dataport.org/open-access/italian-parkinsons-voice-and-speech\nhttps://www.kaggle.com/datasets/subhajournal/patient-health-detection-using-vocal-audio?resource=download\nhttps://archive.ics.uci.edu/dataset/489/parkinson+dataset+with+replicated+acoustic+features\nhttps://archive.ics.uci.edu/dataset/174/parkinsons\nhttps://archive.ics.uci.edu/dataset/189/parkinsons+telemonitoring\nhttps://archive.ics.uci.edu/dataset/470/parkinson+s+disease+classification\nhttps://openslr.org/60/\nhttps://openslr.org/45/\n\nИсходный код программы\n\nhttps://github.com/Nickronus/parkinsons_disease_identifier\n\nЛицензия\n\nGNU General Public License (GPL) Version 3\nhttps://github.com/Nickronus/parkinsons_disease_identifier/blob/main/LICENSE\n\nАвтор\n\nNikita Golubev\nnickronus@mail.ru\n\nВерсия : 1.0</string>
     <string name="btn_understood">Понятно</string>
+    
+    <!-- Welcome Activity -->
+    <string name="welcome_attention">ВНИМАНИЕ!</string>
+    <string name="welcome_text">Данное приложение предназначено для предварительного анализа речевых признаков, которые могут указывать на болезнь Паркинсона. \n\nРезультаты анализа не являются медицинским диагнозом и не заменяют консультацию квалифицированного врача-специалиста. \n\nПриложение использует алгоритмы машинного обучения для оценки речевых характеристик, но точность может варьироваться в зависимости от качества записи и индивидуальных особенностей речи. \n\nЕсли у вас есть подозрения на наличие болезни Паркинсона или других неврологических заболеваний, обязательно обратитесь к врачу для проведения полноценного медицинского обследования. \n\nИспользуя это приложение, вы подтверждаете, что понимаете его ограничения и назначение.</string>
+    <string name="welcome_btn_ok">ХОРОШО</string>
+    
+    <!-- Toast messages -->
+    <string name="toast_permission_required">Разрешение на запись аудио необходимо для работы приложения</string>
+    <string name="toast_record_start_error">Ошибка при начале записи</string>
+    <string name="toast_record_failed">Запись не удалась</string>
+    <string name="toast_file_loaded">Файл загружен</string>
+    <string name="toast_file_load_error">Ошибка загрузки файла</string>
 </resources>

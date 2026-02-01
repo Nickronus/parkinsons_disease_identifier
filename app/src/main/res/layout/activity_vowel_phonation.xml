@@ -44,30 +44,50 @@
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="#2196F3"
-        app:layout_constraintBottom_toTopOf="@id/btnRecord"
+        app:layout_constraintBottom_toTopOf="@id/btnLoadFile"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <!-- Кнопки привязаны к нижнему краю -->
-    <!-- Кнопка начать/остановить запись -->
+    <!-- Строка кнопок: Загрузить файл (слева) | Начать запись (справа) -->
+    <Button
+        android:id="@+id/btnLoadFile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/btn_load_file"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#4CAF50"
+        android:padding="24dp"
+        android:minHeight="72dp"
+        android:elevation="4dp"
+        android:stateListAnimator="@null"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btnRecord"
+        app:layout_constraintBottom_toTopOf="@id/btnAnalyze" />
+
     <Button
         android:id="@+id/btnRecord"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="8dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="16dp"
         android:text="@string/btn_start_recording"
-        android:textSize="24sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="#FFFFFF"
         android:backgroundTint="#2196F3"
-        android:padding="32dp"
-        android:minHeight="88dp"
+        android:padding="24dp"
+        android:minHeight="72dp"
         android:elevation="4dp"
         android:stateListAnimator="@null"
+        app:layout_constraintStart_toEndOf="@id/btnLoadFile"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/btnAnalyze" />
 
     <!-- Кнопка Анализ -->
@@ -102,7 +122,7 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="#FFFFFF"
-        android:backgroundTint="#9E9E9E"
+        android:backgroundTint="#757575"
         android:elevation="4dp"
         android:stateListAnimator="@null"
         app:layout_constraintEnd_toEndOf="parent"

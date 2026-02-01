@@ -1,5 +1,6 @@
 package com.parkinsons_disease_identifier;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +22,11 @@ public class DetailsActivity extends AppCompatActivity {
     private LinearLayout llCharacteristics;
     private Button btnBack;
 
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.applyLocale(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
