@@ -1,6 +1,15 @@
 Использованные признаки:
 ['F2', 'F1', 'SHIMMER_LOCAL', 'JITTER_PPQ5', 'F0_RANGE', 'INTENSITY_RANGE', 'HNR']
 
+Влияние признаков (кросс-валидация, среднее ± стд по 10 фолдам):
+  INTENSITY_RANGE: 24.58 ± 1.39
+  SHIMMER_LOCAL: 21.35 ± 1.09
+  JITTER_PPQ5: 14.54 ± 1.36
+  F1: 11.43 ± 0.78
+  HNR: 10.58 ± 0.72
+  F2: 9.22 ± 0.72
+  F0_RANGE: 8.30 ± 0.67
+
    model = CatBoostClassifier(
         iterations=1111,
         learning_rate=0.027358491976863103,
