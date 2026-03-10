@@ -44,19 +44,13 @@ def load_and_preprocess_data(filename, target_column, name_column, random_state=
 
 def ten_fold_cross_validation(df, target_column, name_column, model, random_state=42):
     #ВОТ ЭТА ХЕРЯ ДЛЯ 22000 
-    #selected_features = ['Jitter(%)', 'PPE', 'Shimmer:APQ11', 'Shimmer:APQ3', 'HNR', 'Jitter(Abs)', 'Jitter:PPQ5', 'Shimmer(dB)']
+    selected_features = ['Jitter(%)', 'PPE', 'Shimmer:APQ11', 'Shimmer:APQ3', 'HNR', 'Jitter(Abs)', 'Jitter:PPQ5', 'Shimmer(dB)']
 
-    #79.13
-    selected_features = ['F2', 'F1', 'SHIMMER_LOCAL', 'JITTER_PPQ5', 'F0_RANGE', 'INTENSITY_RANGE','HNR']
+    #79.13 вот это для фонации
+    #selected_features = ['F2', 'F1', 'SHIMMER_LOCAL', 'JITTER_PPQ5', 'F0_RANGE', 'INTENSITY_RANGE','HNR']
 
 
-    # selected_features = ["Jitter(%)", "Jitter(Abs)", "Jitter:RAP", "Jitter:PPQ5", 
-    #                      "Shimmer", "Shimmer(dB)", "Shimmer:APQ3", "Shimmer:APQ5", 
-    #                      "Shimmer:APQ11", "HNR", "PPE"]
-    # selected_features = ['SHIMMER_LOCAL', 'JITTER_PPQ5','HNR']
-    #selected_features = ['INTENSITY_STDEV', 'INTENSITY_MEAN', 'DURATION', 'F3', 'HNR', 'F0_MEAN', 'F0_MIN']
-    # selected_features = ['JITTER_PPQ5', 'SHIMMER_LOCAL', 'HNR', 'F0_MIN', 'F0_RANGE', 
-    #                     'F2', 'F4', 'INTENSITY_MEAN', 'INTENSITY_STDEV', 'DURATION']
+
     
     X = df[selected_features]
     y = df[target_column]
@@ -182,8 +176,9 @@ def train_and_save_final_model(df, target_column, selected_features, model, save
     return final_model, accuracy
 
 if __name__ == '__main__':
-    filename = 'C:\\Users\\Hot\\Downloads\\123\\result(2).xlsx'
+    #filename = 'C:\\Users\\Hot\\Downloads\\123\\result(2).xlsx'
     #filename = 'C:\\Users\\Hot\\Downloads\\123\\output.xlsx'
+    filename = 'P:\\PROJECTS\\saved_models\\data\\2_speech.xlsx'
     target_column = 'IS SICK'
     name_column = 'NAME'
     random_state = 42
@@ -194,30 +189,30 @@ if __name__ == '__main__':
     print("\nРаспределение по пациентам:")
     print(class_counts)
     
-    model = CatBoostClassifier(
-        iterations=1111,
-        learning_rate=0.027358491976863103,
-        depth=10,
-        l2_leaf_reg=5.114960409364526,
-        border_count=225, 
-        random_seed=random_state,
-        verbose=0
-    )
-
     # model = CatBoostClassifier(
-    #     iterations=1731,
-    #     learning_rate=0.04541312179923037,
-    #     depth=9,
-    #     l2_leaf_reg=7.135909452154734,
-    #     border_count=246,
-    #     random_strength=6.281579072909145,
-    #     bagging_temperature=5.948264766659993,
-    #     loss_function='Logloss',
-    #     eval_metric='AUC',
+    #     iterations=1111,
+    #     learning_rate=0.027358491976863103,
+    #     depth=10,
+    #     l2_leaf_reg=5.114960409364526,
+    #     border_count=225, 
     #     random_seed=random_state,
-    #     thread_count=max(1, (os.cpu_count() or 4) - 1),
     #     verbose=0
     # )
+
+    model = CatBoostClassifier(
+        iterations=1731,
+        learning_rate=0.04541312179923037,
+        depth=9,
+        l2_leaf_reg=7.135909452154734,
+        border_count=246,
+        random_strength=6.281579072909145,
+        bagging_temperature=5.948264766659993,
+        loss_function='Logloss',
+        eval_metric='AUC',
+        random_seed=random_state,
+        thread_count=max(1, (os.cpu_count() or 4) - 1),
+        verbose=0
+    )
     
     metrics, selected_features = ten_fold_cross_validation(df, target_column, name_column, model, random_state)
     

@@ -29,7 +29,8 @@ public class ParkinsonOnnxPredictor {
     private static final boolean CLASS_1_IS_DISEASE = true;
 
     public enum ModelType {
-        SPEECH("speech_model.onnx", SPEECH_FEATURE_ORDER, null),
+        //SPEECH("speech_model.onnx", SPEECH_FEATURE_ORDER, null),
+        SPEECH("2_speech_model.onnx", SPEECH_FEATURE_ORDER, null),
         VOICE("voice_model.onnx", VOICE_FEATURE_ORDER, null);
 
         final String assetName;
